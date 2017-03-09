@@ -7,7 +7,7 @@ portions of the CSV file while not having to re-parse it or
 load it again in memory.
  
 Remember, storing on a disk is *much* cheaper than just 
-putting everything one RAM.
+putting everything in RAM.
   
 # Notes on usage
  
