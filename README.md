@@ -1,9 +1,10 @@
 # CSV to CSVs
 
-This a simple utility that splits a huge CSV file into smaller
-ones given some constraints. This is useful in many use-cases, 
-but mine was that I wanted to examine/modify portions of the CSV 
-file while not having to re-parse it or load it again in memory.
+This is a simple utility that *conditionally* splits a huge CSV 
+file into smaller ones given some constraints. This is useful 
+in many use-cases, but mine was that I wanted to examine/modify 
+portions of the CSV file while not having to re-parse it or 
+load it again in memory.
  
 Remember, storing on a disk is *much* cheaper than just 
 putting everything one RAM.
