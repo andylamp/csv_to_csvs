@@ -2,20 +2,20 @@ import csv
 import os
 
 # iteration bound
-high_bound = 100
+high_bound = 1000000
 # filename delimiter
 fn_delim = "_"
 # created files extension
 fn_ext = ".csv"
 # folder to place the results
-out_folder = "out"
+out_folder = "out_accel"
 # first line
 first_csv_line = ""
 # first line length
 max_line_tokens = 0
 
 # the constraints which should be on the first line
-cons = [6, 8, 9]
+cons = [9, 8, 6]
 # enable case sensitive insertion
 case_sensitive = False
 # enable pre-pend by the constraint name
@@ -23,9 +23,11 @@ pre_pend = False
 # stick initial line
 init_line_stick = True
 # enable if we want to have iteration bound
-use_iteration_bound = True
+use_iteration_bound = False
 # directory of execution
 dir_path = os.path.dirname(os.path.realpath(__file__))
+# count skip errors
+skip_error_count = 0
 
 # constraint key -> name map
 cons_strings = {}
@@ -35,6 +37,8 @@ cons_dicts = []
 file_streams = {}
 # filename -> csv writer stream
 csv_writers = {}
+# skip-list
+skip_token_list = ["null"]
 
 
 # The main stub for our utility
@@ -64,8 +68,11 @@ def csv_stub():
 # Perform clean up tasks
 def cleanup(par_csv):
     global file_streams
+    global skip_error_count
     print("INFO -- Splitting done, created {0} child files"
           .format(len(file_streams)))
+    print("INFO -- Skip errors where: {0}"
+          .format(skip_error_count))
     # close the streams
     for k, fs in file_streams.items():
         fs.close()
@@ -76,6 +83,7 @@ def cleanup(par_csv):
 
 # Function to perform the CSV splitting
 def perform_splitting(csv_reader):
+    global high_bound
     if not use_iteration_bound:
         # we don't have a bound to enforce, just run through.
         for row in csv_reader:
@@ -90,6 +98,7 @@ def perform_splitting(csv_reader):
 
 # Attempt to write the row to its respective csv stream
 def write_row(row):
+    global max_line_tokens
     # sanity check for values
     if len(row) > max_line_tokens:
         print("ERROR -- Irregularly sized line found, skipping")
@@ -124,12 +133,15 @@ def cons_fn(row):
     global cons_dicts
     global file_streams
     global csv_writers
+    global skip_error_count
     # build up the filename
     fn = ""
     for i, d in enumerate(cons_dicts):
         # skip null tuples
-        if row[cons[i]].lower() == "null":
-            print("ERROR -- Null value found, skipping...")
+        if row[cons[i]].lower() in skip_token_list:
+            skip_error_count += 1
+            # print("ERROR -- Skip list matched value found: ({0}), skipping..."
+            #      .format(row[cons[i]].lower()))
             return None
 
         if pre_pend:
