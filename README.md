@@ -60,7 +60,7 @@ Let's say you have the following column labels in csv file:
 Index,Arrival_Time,Creation_Time,x,y,z,User,Model,Device,gt
 ```
 
-Now say you want to get file splits based on each User, what you could do is:
+Now say you want to get file splits based on each `User`, what you could do is:
 
 ```
 ./csv_to_csvs.py split myfile.csv cons "[6]"
@@ -70,7 +70,7 @@ Now you would get a number of csv files containing each information respective t
 *unique* user found during execution.
 
 Now let's take it a step further, say you want to create the csv files based on each
-Device and User, that could the achieved like so:
+`Device` and `User`, that could the achieved like so:
 
 ```
 ./csv_to_csvs.py split myfile.csv cons "[6, 8]"
