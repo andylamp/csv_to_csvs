@@ -8,6 +8,16 @@ load it again in memory.
  
 Remember, storing on a disk is *much* cheaper than just 
 putting everything in RAM.
+
+# Requirements
+
+You will need Python 3.5+ or greater and I have developed it using Python 3.6. I also 
+assume that you have `docopt` package installed, if not you will need to install it
+by using the following command:
+
+```
+pip3 install docopt
+```
   
 # Features
   
