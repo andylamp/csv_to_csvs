@@ -100,7 +100,7 @@ def parse_arguments():
 
     if arg_dict["--use_bound_limit"]:
         use_iteration_bound = True
-        high_bound = arg_dict["--use_bound_limit"]
+        high_bound = int(arg_dict["--use_bound_limit"])
 
     if arg_dict["--case_sensitive"]:
         case_sensitive = True
@@ -237,8 +237,8 @@ def cons_fn(row):
     fn = ""
     for i, d in enumerate(cons_dicts):
         # skip null tuples
-        if [row[cons[i]].lower() if not case_sensitive else row[cons[i]]] \
-                in skip_token_list:
+        token = row[cons[i]].lower() if not case_sensitive else row[cons[i]]
+        if token in skip_token_list:
             skip_error_count += 1
             # print("ERROR -- Skip list matched value found: ({0}), skipping..."
             #      .format(row[cons[i]].lower()))
