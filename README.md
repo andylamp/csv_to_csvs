@@ -73,7 +73,14 @@ Now let's take it a step further, say you want to create the csv files based on 
 Device and User, that could the achieved like so:
 
 ```
-./csv_to_csvs.py split myfile.csv cons "[6]"
+./csv_to_csvs.py split myfile.csv cons "[6, 8]"
+```
+
+Do note that the `User` has *precedence* over the `Device`, should you want it to be
+the other way around then you would do:
+
+```
+./csv_to_csvs.py split myfile.csv cons "[8, 6]"
 ```
 
 # License
