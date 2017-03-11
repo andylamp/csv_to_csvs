@@ -47,11 +47,12 @@ want to have when you split the file; the constraint list has the following form
 "[idx1, idx2,...,idxn]"
 ```
 
+As you might notice the constraint argument is an array of strings that has to be 
+enclosed in `"""`. The constraints are encoded as a list of column label indexes starting
+from `0` and are expected to be in the order of enforcement, thus `"[0, 1]""` and 
+`"[1, 0]"` are not the same.
+
 # Examples
-
-It's a string, so it must be enclosed in `"""`, and have a list of column label indexes
-in the order of enforcement, thus `"[0, 1]""` and `"[1, 0]"` are not the same.
-
 
 Let's say you have the following column labels in csv file:
 
