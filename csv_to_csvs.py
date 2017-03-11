@@ -28,6 +28,8 @@ from docopt import docopt
 
 # iteration bound
 high_bound = 100
+# csv filename
+csv_filename = ""
 # filename delimiter
 fn_delim = "_"
 # output files csv delimiter
@@ -88,6 +90,7 @@ def parse_arguments():
     global put_column_labels
     global use_iteration_bound
     global skip_token_list
+    global csv_filename
 
     # parse argument list
     arg_dict = docopt(__doc__, version='0.5b1')
@@ -114,6 +117,7 @@ def parse_arguments():
 
     # build up constraints list
     cons = list(map(int, arg_dict["<cons>"][1:-1].split(",")))
+    csv_filename = arg_dict["<file>"]
 
     # properties that are used in general w/e the case
     fn_delim = arg_dict["--use_fn_delim"]
@@ -121,9 +125,6 @@ def parse_arguments():
     in_csv_delim = arg_dict["--in_csv_delim"]
     fn_ext = arg_dict["--use_ext"]
     out_folder = arg_dict["--use_out_folder"]
-
-    print(high_bound)
-    # print(arg_dict)
 
 
 # The main stub for our utility
@@ -150,8 +151,9 @@ def open_csv():
     global first_csv_line
     global max_line_tokens
     global csv_stream
+    global csv_filename
 
-    par_csv = open('data/Phones_accelerometer.csv', 'r')
+    par_csv = open(csv_filename, 'r')
     csv_stream = csv.reader(par_csv, delimiter=in_csv_delim)
     first_csv_line = csv_stream.__next__()
     max_line_tokens = len(first_csv_line)
