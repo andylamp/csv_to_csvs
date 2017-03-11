@@ -168,7 +168,7 @@ def cleanup():
     global skip_error_count
     print("INFO -- Splitting done, created {0} child files"
           .format(len(file_streams)))
-    print("INFO -- Skip errors where: {0}"
+    print("INFO -- Skipped rows (due to skip list constraints): {0}"
           .format(skip_error_count))
     # close the streams
     for k, fs in file_streams.items():
