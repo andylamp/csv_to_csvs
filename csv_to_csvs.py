@@ -1,27 +1,55 @@
+"""csv_to_csvs the awesome way of conditionally spiting large csv files into smaller ones
+Usage:
+  csv_to_csvs.py split <file> cons <cons> [--case_sensitive \
+(--use_bound | --use_bound_limit=<limit>) \
+--use_ext=<ext> --pre_pend --out_csv_delim=<delim> --use_fn_delim=<delim> \
+--no_column_labels --use_out_folder=<folder_name> --use_skip_list=<token_list>]
+  csv_to_csvs.py -h | --help
+  csv_to_csvs.py --version
+Arguments:
+    -h --help                       Show this message.
+    --version                       Show version number.
+    --case_sensitive                Case sensitive in labels
+    --use_bound_limit=<limit>       Use a specific upper bound.
+    --use_bound                     Use the bound  [default: 1000].
+    --use_ext=<ext>                 Use custom outfile extension  [default: .csv].
+    --pre_pend                      Enable prepend of strings with the csv label.
+    --no_column_labels              Do not put column labels in created files first line.
+    --use_fn_delim=<delim>          Use a specific delimiter for filenames [default: _].
+    --out_csv_delim=<delim>         Use a specific delimiter for out files [default: ,].
+    --in_csv_delim=<delim>          Use a specific delimiter for input file [default: ,].
+    --use_skip_list=<token_list>    Use a skip list [default: [null]].
+    --use_out_folder=<folder_name>  Use this to dump our files to [default: out].
+"""
 import csv
 import os
+from docopt import docopt
 
 # iteration bound
-high_bound = 1000000
+high_bound = 100
 # filename delimiter
 fn_delim = "_"
+# output files csv delimiter
+out_csv_delim = ","
+# input file csv delimiter
+in_csv_delim = ","
 # created files extension
 fn_ext = ".csv"
 # folder to place the results
-out_folder = "out_accel"
+out_folder = "out"
 # first line
 first_csv_line = ""
 # first line length
 max_line_tokens = 0
 
 # the constraints which should be on the first line
-cons = [9, 8, 6]
+cons = []
 # enable case sensitive insertion
 case_sensitive = False
 # enable pre-pend by the constraint name
 pre_pend = False
 # stick initial line
-init_line_stick = True
+put_column_labels = True
 # enable if we want to have iteration bound
 use_iteration_bound = False
 # directory of execution
@@ -39,34 +67,100 @@ file_streams = {}
 csv_writers = {}
 # skip-list
 skip_token_list = ["null"]
+# input file fd
+par_csv = None
+# input file csv stream
+csv_stream = None
+
+
+# Function to translate docopts -> program arguments
+def parse_arguments():
+    global high_bound
+    global fn_delim
+    global out_csv_delim
+    global in_csv_delim
+    global fn_ext
+    global out_folder
+    global cons
+    global case_sensitive
+    global pre_pend
+    global put_column_labels
+    global use_iteration_bound
+    global skip_token_list
+
+    # parse argument list
+    arg_dict = docopt(__doc__, version='0.5b1')
+
+    if arg_dict["--use_bound"]:
+        use_iteration_bound = True
+
+    if arg_dict["--use_bound_limit"]:
+        use_iteration_bound = True
+        high_bound = arg_dict["--use_bound_limit"]
+
+    if arg_dict["--case_sensitive"]:
+        case_sensitive = True
+
+    if arg_dict["--no_column_labels"]:
+        put_column_labels = False
+
+    if arg_dict["--pre_pend"]:
+        pre_pend = True
+
+    if arg_dict["--use_skip_list"]:
+        skip_token_list = \
+            [m.strip() for m in arg_dict["--use_skip_list"][1:-1].split(",")]
+
+    # build up constraints list
+    cons = list(map(int, arg_dict["<cons>"][1:-1].split(",")))
+
+    # properties that are used in general w/e the case
+    fn_delim = arg_dict["--use_fn_delim"]
+    out_csv_delim = arg_dict["--out_csv_delim"]
+    in_csv_delim = arg_dict["--in_csv_delim"]
+    fn_ext = arg_dict["--use_ext"]
+    out_folder = arg_dict["--use_out_folder"]
+
+    print(high_bound)
+    # print(arg_dict)
 
 
 # The main stub for our utility
 def csv_stub():
-    global first_csv_line
-    global max_line_tokens
+    # parse command line arguments
+    parse_arguments()
 
-    par_csv = open('data/Phones_accelerometer.csv', 'r')
-    r = csv.reader(par_csv)
-    first_csv_line = r.__next__()
-    max_line_tokens = len(first_csv_line)
-    print("INFO -- Using data-out folder: {0}"
-          .format(out_folder))
+    # open the csv file
+    open_csv()
 
     # create the constraints
     build_constraints()
 
-    # print the extracted constraints
-    # print(cons_strings)
-
     # split the file to children based on constraints
-    perform_splitting(r)
+    perform_splitting()
     # perform closing stuff.
-    cleanup(par_csv)
+    cleanup()
+
+
+# Open the csv file and create the csv reader stream
+def open_csv():
+    global par_csv
+    global in_csv_delim
+    global first_csv_line
+    global max_line_tokens
+    global csv_stream
+
+    par_csv = open('data/Phones_accelerometer.csv', 'r')
+    csv_stream = csv.reader(par_csv, delimiter=in_csv_delim)
+    first_csv_line = csv_stream.__next__()
+    max_line_tokens = len(first_csv_line)
+    print("INFO -- Using data-out folder: {0}"
+          .format(out_folder))
 
 
 # Perform clean up tasks
-def cleanup(par_csv):
+def cleanup():
+    global par_csv
     global file_streams
     global skip_error_count
     print("INFO -- Splitting done, created {0} child files"
@@ -82,16 +176,18 @@ def cleanup(par_csv):
 
 
 # Function to perform the CSV splitting
-def perform_splitting(csv_reader):
+def perform_splitting():
+    global csv_stream
     global high_bound
+    global use_iteration_bound
     if not use_iteration_bound:
         # we don't have a bound to enforce, just run through.
-        for row in csv_reader:
+        for row in csv_stream:
             # write the row to the respective csv stream
             write_row(row)
     else:
         # zip the value to force an upper bound
-        for zipped_row in zip(range(high_bound), csv_reader):
+        for zipped_row in zip(range(high_bound), csv_stream):
             # write the row to the respective csv stream
             write_row(zipped_row[1])
 
@@ -138,7 +234,8 @@ def cons_fn(row):
     fn = ""
     for i, d in enumerate(cons_dicts):
         # skip null tuples
-        if row[cons[i]].lower() in skip_token_list:
+        if [row[cons[i]].lower() if not case_sensitive else row[cons[i]]] \
+                in skip_token_list:
             skip_error_count += 1
             # print("ERROR -- Skip list matched value found: ({0}), skipping..."
             #      .format(row[cons[i]].lower()))
@@ -160,7 +257,7 @@ def cons_fn(row):
         print("INFO -- Opening csv stream at: {0}".format(fn))
         f = create_file(fn)
         file_streams[fn] = f
-        r = csv.writer(f)
+        r = csv.writer(f, delimiter=out_csv_delim)
         csv_writers[fn] = r
         r.writerow(first_csv_line)
     # finally return the file stream to append
