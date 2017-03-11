@@ -1,3 +1,4 @@
+#!/usr/local/bin/python3.6
 """csv_to_csvs the awesome way of conditionally spiting large csv files into smaller ones
 Usage:
   csv_to_csvs.py split <file> cons <cons> [--case_sensitive \
