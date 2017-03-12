@@ -76,57 +76,6 @@ par_csv = None
 csv_stream = None
 
 
-# Function to translate docopts -> program arguments
-def parse_arguments():
-    global high_bound
-    global fn_delim
-    global out_csv_delim
-    global in_csv_delim
-    global fn_ext
-    global out_folder
-    global cons
-    global case_sensitive
-    global pre_pend
-    global put_column_labels
-    global use_iteration_bound
-    global skip_token_list
-    global csv_filename
-
-    # parse argument list
-    arg_dict = docopt(__doc__, version='0.5b1')
-
-    if arg_dict["--use_bound"]:
-        use_iteration_bound = True
-
-    if arg_dict["--use_bound_limit"]:
-        use_iteration_bound = True
-        high_bound = int(arg_dict["--use_bound_limit"])
-
-    if arg_dict["--case_sensitive"]:
-        case_sensitive = True
-
-    if arg_dict["--no_column_labels"]:
-        put_column_labels = False
-
-    if arg_dict["--pre_pend"]:
-        pre_pend = True
-
-    if arg_dict["--use_skip_list"]:
-        skip_token_list = \
-            [m.strip() for m in arg_dict["--use_skip_list"][1:-1].split(",")]
-
-    # build up constraints list
-    cons = list(map(int, arg_dict["<cons>"][1:-1].split(",")))
-    csv_filename = arg_dict["<file>"]
-
-    # properties that are used in general w/e the case
-    fn_delim = arg_dict["--use_fn_delim"]
-    out_csv_delim = arg_dict["--out_csv_delim"]
-    in_csv_delim = arg_dict["--in_csv_delim"]
-    fn_ext = arg_dict["--use_ext"]
-    out_folder = arg_dict["--use_out_folder"]
-
-
 # The main stub for our utility
 def csv_stub():
     # parse command line arguments
@@ -140,6 +89,7 @@ def csv_stub():
 
     # split the file to children based on constraints
     perform_splitting()
+
     # perform closing stuff.
     cleanup()
 
@@ -273,6 +223,57 @@ def create_file(fn):
     # print(fn)
     os.makedirs(os.path.dirname(fp), exist_ok=True)
     return open(fp, "w")
+
+
+# Function to translate docopts -> program arguments
+def parse_arguments():
+    global high_bound
+    global fn_delim
+    global out_csv_delim
+    global in_csv_delim
+    global fn_ext
+    global out_folder
+    global cons
+    global case_sensitive
+    global pre_pend
+    global put_column_labels
+    global use_iteration_bound
+    global skip_token_list
+    global csv_filename
+
+    # parse argument list
+    arg_dict = docopt(__doc__, version='0.5b1')
+
+    if arg_dict["--use_bound"]:
+        use_iteration_bound = True
+
+    if arg_dict["--use_bound_limit"]:
+        use_iteration_bound = True
+        high_bound = int(arg_dict["--use_bound_limit"])
+
+    if arg_dict["--case_sensitive"]:
+        case_sensitive = True
+
+    if arg_dict["--no_column_labels"]:
+        put_column_labels = False
+
+    if arg_dict["--pre_pend"]:
+        pre_pend = True
+
+    if arg_dict["--use_skip_list"]:
+        skip_token_list = \
+            [m.strip() for m in arg_dict["--use_skip_list"][1:-1].split(",")]
+
+    # build up constraints list
+    cons = list(map(int, arg_dict["<cons>"][1:-1].split(",")))
+    csv_filename = arg_dict["<file>"]
+
+    # properties that are used in general w/e the case
+    fn_delim = arg_dict["--use_fn_delim"]
+    out_csv_delim = arg_dict["--out_csv_delim"]
+    in_csv_delim = arg_dict["--in_csv_delim"]
+    fn_ext = arg_dict["--use_ext"]
+    out_folder = arg_dict["--use_out_folder"]
 
 
 if __name__ == '__main__':

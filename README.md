@@ -85,5 +85,5 @@ the other way around then you would do:
 
 # License
  
-Unless otherwise noted, this work is licensed under  the terms 
+Unless otherwise noted, this work is licensed under the terms 
 and conditions of GPLv3.
