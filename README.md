@@ -48,7 +48,7 @@ want to have when you split the file; the constraint list has the following form
 ```
 
 As you might notice the constraint argument is an array of strings that has to be 
-enclosed in `"""`. The constraints are encoded as a list of column label indexes starting
+enclosed in `" "`. The constraints are encoded as a list of column label indexes starting
 from `0` and are expected to be in the order of enforcement, thus `"[0, 1]""` and 
 `"[1, 0]"` are not the same.
 
