@@ -26,7 +26,7 @@ based on your preferences. It supports the following things:
 
  * Splitting based on *multiple* column constraints
  * Use an upper bound for iterations
- * Use custom extension for your output files (different than `.csv``)
+ * Use custom extension for your output files (different than `.csv`)
  * Option to enable column name prepend against arguments.
  * Option to suppress the first line naming (MatLab users rejoice! no more row offset!)
  * Use different delimiters for input/output files
