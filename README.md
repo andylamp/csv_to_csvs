@@ -83,6 +83,17 @@ the other way around then you would do:
 ./csv_to_csvs.py split myfile.csv cons "[8, 6]"
 ```
 
+# Performance
+
+On my 2016 Macbook Pro I can parse and split CSV files at a rate of around 35-25 MB/s; 
+but do note that YMMV.
+
+# Notes
+
+Please note that if you encounter while executing the program in Mac OS an error message
+saying that you have too many file streams open, then you should adjust this limit 
+by running `ulimit -n <value>` command inside the terminal.
+
 # License
  
 Unless otherwise noted, this work is licensed under the terms 
